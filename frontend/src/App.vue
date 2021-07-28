@@ -1,23 +1,29 @@
 <template>
   <div id="app">
-    <the-navbar :account="account"/>
-    <main-content
-      :dai-token-balance="daiTokenBalance"
-      :dapp-token-balance="daiTokenBalance"
-      :staking-balance="stakingBalance"
-      :dai-token="daiToken"
-      :token-farm="tokenFarm"/>
-    <b-loading is-full-page v-model="isLoading"/>
+    <div v-if="!isLoading">
+      <header>
+        account: {{ account }}
+      </header>
+      <main-content
+        :account="account"
+        :dai-token-balance="daiTokenBalance"
+        :dapp-token-balance="daiTokenBalance"
+        :staking-balance="stakingBalance"
+        :dai-token="daiToken"
+        :token-farm="tokenFarm"/>
+    </div>
+    <div v-else>
+      loading
+    </div>
   </div>
 </template>
 
 <script>
   import MainContent from './components/MainContent.vue'
   import Web3 from "web3"
-  import TheNavbar from "./components/TheNavbar"
-  import DaiToken from './abis/DaiToken.json'
-  import DappToken from './abis/DappToken.json'
-  import TokenFarm from './abis/TokenFarm.json'
+  import DaiToken from './contracts/DaiToken.json'
+  import DappToken from './contracts/DappToken.json'
+  import TokenFarm from './contracts/TokenFarm.json'
 
   export default {
     name: 'App',
@@ -91,7 +97,6 @@
       },
     },
     components: {
-      TheNavbar,
       MainContent,
     },
   }
