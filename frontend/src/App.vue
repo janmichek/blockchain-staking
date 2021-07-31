@@ -2,7 +2,9 @@
   <div id="app">
     <div v-if="!isLoading">
       <header>
-        account: {{ account }}
+        Account {{ account }}
+        <br>
+        Balance: {{ web3.utils.fromWei(balance, 'ether') }}
       </header>
       <main-content
         :account="account"
@@ -29,71 +31,56 @@
     name: 'App',
     data () {
       return {
-        account: '0x0',
-        daiToken: {},
-        dappToken: {},
-        tokenFarm: {},
-        daiTokenBalance: '0',
-        dappTokenBalance: '0',
-        stakingBalance: '0',
+        account: '',
+        daiToken: null,
+        dappToken: null,
+        tokenFarm: null,
+        balance: 0,
+        daiTokenBalance: 0,
+        dappTokenBalance: 0,
+        stakingBalance: 0,
+        web3: undefined,
         isLoading: true,
       }
     },
     async mounted () {
-      await this.loadWeb3()
       await this.loadBlockchainData()
     },
     methods: {
       async loadBlockchainData () {
-        const web3 = window.web3
-        const accounts = await web3.eth.getAccounts()
-        this.account = accounts[0]
-        const networkId = await web3.eth.net.getId()
 
-        const daiTokenData = DaiToken.networks[networkId]
+        if (typeof window.ethereum !== 'undefined') {
+          this.web3 = new Web3(window.ethereum)
+          const netId = await this.web3.eth.net.getId()
+          const accounts = await this.web3.eth.getAccounts()
+          this.account = accounts[0]
+          //load balance
+          if (typeof accounts[0] !== 'undefined') {
+            this.balance = await this.web3.eth.getBalance(accounts[0])
+          } else {
+            window.alert('Please login with MetaMask')
+          }
 
-        if (daiTokenData) {
-          const daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
-          this.daiToken = daiToken
-          let daiTokenBalance = await daiToken.methods.balanceOf(this.account).call()
-          this.daiTokenBalance = daiTokenBalance.toString()
+          //load contracts
+          try {
+            this.daiToken = new this.web3.eth.Contract(DaiToken.abi, DaiToken.networks[netId].address)
+            this.dappToken = new this.web3.eth.Contract(DappToken.abi, DappToken.networks[netId].address)
+            this.tokenFarm = new this.web3.eth.Contract(TokenFarm.abi, TokenFarm.networks[netId].address)
+
+
+            this.daiTokenBalance = await this.daiToken.methods.balanceOf(this.account).call()
+            this.dappTokenBalance = await this.dappToken.methods.balanceOf(this.account).call()
+            this.stakingBalance = await this.tokenFarm.methods.stakingBalance(this.account).call()
+          } catch (e) {
+            /* eslint-disable no-console*/
+            console.log('Error', e)
+            window.alert('Contracts not deployed to the current network')
+          }
         } else {
-          window.alert('DaiToken contract not deployed to detected network')
-        }
-
-        const dappTokenData = DappToken.networks[networkId]
-        if (dappTokenData) {
-          const dappToken = new web3.eth.Contract(DappToken.abi, dappTokenData.address)
-          this.dappToken = dappToken
-          let dappTokenBalance = await dappToken.methods.balanceOf(this.account).call()
-          this.dappTokenBalance = dappTokenBalance.toString()
-        } else {
-          window.alert('dappToken contract not deployed to detected network')
-        }
-
-
-        const tokenFarmData = TokenFarm.networks[networkId]
-        if (tokenFarmData) {
-          const tokenFarm = new web3.eth.Contract(TokenFarm.abi, tokenFarmData.address)
-          this.tokenFarm = tokenFarm
-          let stakingBalance = await tokenFarm.methods.stakingBalance(this.account).call()
-          this.stakingBalance = stakingBalance.toString()
-        } else {
-          window.alert('tokenFarm contract not deployed to detected network')
+          window.alert('Please install MetaMask')
         }
 
         this.isLoading = false
-
-      },
-      async loadWeb3 () {
-        if (window.ethereum) {
-          window.web3 = new Web3(window.ethereum)
-          await window.ethereum.enable()
-        } else if (window.web3) {
-          window.web3 = new Web3(window.web3.currentProvider)
-        } else {
-          window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-        }
       },
     },
     components: {

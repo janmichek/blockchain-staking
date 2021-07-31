@@ -2,7 +2,7 @@
   <div>
     <section>
       <div>
-        <strong>Staking Balance</strong>: {{ stakingFormatted }} mDai
+        <strong>Staking Balance</strong>: {{ stakingFormatted }} mDAI
       </div>
       <div>
         <strong>Reward Balance</strong>: {{ dappFormatted }} DAPP
@@ -20,9 +20,14 @@
         <label>Amount</label>
         <input v-model="input"/>
       </div>
-
       <button @click="stake">STAKE</button>
-      <button @click="unstake">UNSTAKE</button>
+    </section>
+    <hr>
+    <section>
+      <h2>
+        Unstake Tokens
+      </h2>
+      <button @click="unstake">UNSTAKE ALL</button>
     </section>
   </div>
 </template>
@@ -43,14 +48,14 @@
     data () {
       return {
         input: '',
+        web3: new Web3(window.ethereum),
       }
     },
     methods: {
       stake () {
-        // window.web3 = new Web3(window.ethereum)
-        const web3 = window.web3
+        const amount = this.web3.utils.toWei(this.input)
+        /* eslint-disable no-console*/
 
-        const amount = web3.utils.toWei(this.input)
         console.log('amount', amount)
         this.daiToken.methods.approve(this.tokenFarm._address, amount)
           .send({ from: this.account })
@@ -58,27 +63,26 @@
             this.tokenFarm.methods.stakeTokens(amount)
               .send({ from: this.account })
               .on('transactionHash', () => {
+                window.location.reload(true)
               })
           })
       },
 
-      unstake (){
+      unstake () {
         this.tokenFarm.methods.unstakeTokens().send({ from: this.account }).on('transactionHash', () => {
+          window.location.reload(true)
         })
-      }
+      },
     },
     computed: {
       stakingFormatted () {
-        const web3 = window.web3
-        return web3.utils.fromWei(this.stakingBalance, 'Ether')
+        return this.web3.utils.fromWei(this.stakingBalance, 'Ether')
       },
       dappFormatted () {
-        const web3 = window.web3
-        return web3.utils.fromWei(this.dappTokenBalance, 'Ether')
+        return this.web3.utils.fromWei(this.dappTokenBalance, 'Ether')
       },
       daiFormatted () {
-        const web3 = window.web3
-        return web3.utils.fromWei(this.daiTokenBalance, 'Ether')
+        return this.web3.utils.fromWei(this.daiTokenBalance, 'Ether')
       },
     },
   }
