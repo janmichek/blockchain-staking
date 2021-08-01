@@ -37,9 +37,9 @@
         dappToken: null,
         tokenFarm: null,
         balance: 0,
-        daiTokenBalance: 0,
-        dappTokenBalance: 0,
-        stakingBalance: 0,
+        daiTokenBalance: '0',
+        dappTokenBalance: '0',
+        stakingBalance: '0',
         web3: undefined,
         isLoading: true,
       }

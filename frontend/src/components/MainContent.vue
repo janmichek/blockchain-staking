@@ -69,7 +69,9 @@
       },
 
       unstake () {
-        this.tokenFarm.methods.unstakeTokens().send({ from: this.account }).on('transactionHash', () => {
+        this.tokenFarm.methods.unstakeTokens()
+          .send({ from: this.account })
+          .on('transactionHash', () => {
           window.location.reload(true)
         })
       },
