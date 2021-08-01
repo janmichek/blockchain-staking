@@ -1,6 +1,8 @@
 ### Blockchain Staking
 
-This repository is inspired by tutorial:
+This DeFi app let you earn interest for depositing cryptocurrency.
+
+This repository is inspired by following tutorial:
 https://www.youtube.com/watch?v=CgXQC4dbGUE
 
 ## Dependencies
@@ -17,6 +19,8 @@ https://www.youtube.com/watch?v=CgXQC4dbGUE
 
 ### Deploy contracts to blockchain
 
+Run Ganache with Quickstart Workspace
+
 ```yarn deploy```
 
 ### Install frontend dependencies
@@ -26,8 +30,6 @@ https://www.youtube.com/watch?v=CgXQC4dbGUE
 ```yarn install```
 
 ## Run project
-
-Run Ganache with Quickstart Workspace
 
 ```yarn serve```
 
