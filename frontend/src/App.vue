@@ -1,22 +1,23 @@
 <template>
-  <div id="app">
-    <div v-if="!isLoading">
-      <header>
-        Account {{ account }}
-        <br>
-        Balance: {{ web3.utils.fromWei(balance, 'ether') }}
-      </header>
-      <main-content
-        :account="account"
-        :dai-token-balance="daiTokenBalance"
-        :dapp-token-balance="daiTokenBalance"
-        :staking-balance="stakingBalance"
-        :dai-token="daiToken"
-        :token-farm="tokenFarm"/>
-    </div>
-    <div v-else>
-      loading
-    </div>
+  <div
+    id="app"
+    v-if="!isLoading">
+    <header>
+      <h1>Staking DAPP</h1>
+      Account {{ account }}
+      <br>
+      Balance: {{ web3.utils.fromWei(balance, 'ether') }}
+    </header>
+    <main-content
+      :account="account"
+      :dai-token-balance="daiTokenBalance"
+      :dapp-token-balance="daiTokenBalance"
+      :staking-balance="stakingBalance"
+      :dai-token="daiToken"
+      :token-farm="tokenFarm"/>
+  </div>
+  <div v-else>
+    loading
   </div>
 </template>
 
